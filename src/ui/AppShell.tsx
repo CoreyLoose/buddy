@@ -6,6 +6,8 @@ import { ViewSwitcher } from './ViewSwitcher';
 export interface AppShellProps {
   /** Brand/title shown top-left. Defaults to the app name. */
   title?: ReactNode;
+  /** Content rendered when the Family (two-kid dashboard) view is active. */
+  familyView?: ReactNode;
   /** Content rendered when the Kid view is active. */
   kidView: ReactNode;
   /** Content rendered when the Grown-up / Manage view is active. */
@@ -26,6 +28,7 @@ export interface AppShellProps {
  */
 export function AppShell({
   title = '⭐ Chore Stars',
+  familyView,
   kidView,
   manageView,
   headerRight,
@@ -34,10 +37,14 @@ export function AppShell({
 }: AppShellProps) {
   const view = useUiStore((s) => s.view);
 
+  // The family dashboard needs more room for two side-by-side panels.
+  const maxWidth = view === 'family' ? 'max-w-6xl' : 'max-w-4xl';
+  const content = view === 'family' ? familyView : view === 'kid' ? kidView : manageView;
+
   return (
     <div className={cn('min-h-screen bg-slate-50 text-slate-900', className)}>
       <header className="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-200">
-        <div className="mx-auto max-w-4xl px-4 py-3 flex items-center justify-between gap-3">
+        <div className={cn('mx-auto px-4 py-3 flex items-center justify-between gap-3', maxWidth)}>
           <div className="text-2xl font-black tracking-tight">{title}</div>
           <div className="flex items-center gap-3">
             {!hideSwitcher && <ViewSwitcher />}
@@ -46,9 +53,7 @@ export function AppShell({
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-4 py-6">
-        {view === 'kid' ? kidView : manageView}
-      </main>
+      <main className={cn('mx-auto px-4 py-6', maxWidth)}>{content}</main>
     </div>
   );
 }

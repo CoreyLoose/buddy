@@ -11,12 +11,13 @@ export interface ViewSwitcherProps {
 }
 
 const OPTIONS: { value: AppView; label: string; icon: string }[] = [
+  { value: 'family', label: 'Family', icon: '👨‍👩‍👧‍👦' },
   { value: 'kid', label: 'Kid', icon: '🧒' },
   { value: 'manage', label: 'Grown-up', icon: '🧑‍💼' },
 ];
 
 /**
- * Segmented control toggling Kid view ↔ Grown-up/Manage view.
+ * Segmented control toggling Family ↔ Kid ↔ Grown-up/Manage view.
  * Uncontrolled by default (reads/writes the shared UI store); can be controlled
  * via `value`/`onChange`.
  */
