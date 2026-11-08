@@ -18,8 +18,8 @@ export default defineConfig({
             registerType: 'autoUpdate',
             includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
             manifest: {
-              name: 'Chore Stars',
-              short_name: 'Chore Stars',
+              name: 'Family Routines',
+              short_name: 'Routines',
               description: 'Chore & routine tracker for kids, with star rewards.',
               theme_color: '#6366f1',
               background_color: '#f8fafc',

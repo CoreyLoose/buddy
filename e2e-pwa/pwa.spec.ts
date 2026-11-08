@@ -11,7 +11,7 @@ test('installable PWA with a linked manifest and icons', async ({ page }) => {
     return res.json();
   }, manifestHref);
 
-  expect(manifest.name).toBe('Chore Stars');
+  expect(manifest.name).toBe('Family Routines');
   expect(manifest.display).toBe('standalone');
   expect(manifest.icons.some((i: { sizes: string }) => i.sizes === '512x512')).toBe(true);
   expect(
@@ -40,7 +40,7 @@ test('works offline from the precached app shell', async ({ page, context }) => 
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByTestId('panel-left')).toBeVisible();
-  await expect(page.getByRole('heading', { name: /Ava/ }).first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Ozzy/ }).first()).toBeVisible();
 
   await context.setOffline(false);
 });
