@@ -1,72 +1,130 @@
-import { useStore, selectStarBalance, selectTasksForDate, selectIsTaskDone } from './store';
+import { useState } from 'react';
+import {
+  useStore,
+  selectStarBalance,
+  selectTasksForDate,
+  selectIsTaskDone,
+} from './store';
+import {
+  AppShell,
+  Card,
+  Button,
+  StarCount,
+  ProgressRing,
+  IconBadge,
+  Modal,
+  EmptyState,
+  IconPicker,
+} from './ui';
 
 /**
- * M0 foundation smoke screen. This is intentionally minimal — it exists to prove
- * the store + localStorage persistence works end-to-end. M1 (design system / shell)
- * and the feature tracks will replace this UI.
+ * M1 demo shell. This wires the design system against existing seed data to show
+ * the Kid view ↔ Grown-up view switch and the reusable components. The real
+ * feature screens (profiles, tasks, rewards) are owned by other tracks and will
+ * replace these placeholder slots.
  */
 export default function App() {
+  return <AppShell kidView={<KidViewDemo />} manageView={<ManageViewDemo />} />;
+}
+
+function KidViewDemo() {
   const state = useStore();
-  const { kids, toggleCompletion } = state;
+  const { kids } = state;
+
+  if (kids.length === 0) {
+    return (
+      <EmptyState
+        icon="🧒"
+        title="No kids yet"
+        description="Add a kid in the Grown-up view to get started."
+      />
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 p-6">
-      <header className="mb-6">
-        <h1 className="text-3xl font-bold">⭐ Chore Stars</h1>
-        <p className="text-slate-500">
-          M0 foundation — data persists to localStorage. Reload to confirm state is retained.
-        </p>
-      </header>
+    <div className="grid gap-6 sm:grid-cols-2">
+      {kids.map((kid) => {
+        const tasks = selectTasksForDate(state, kid.id);
+        const doneCount = tasks.filter((t) =>
+          selectIsTaskDone(state, t.id, kid.id),
+        ).length;
+        const balance = selectStarBalance(state, kid.id);
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        {kids.map((kid) => {
-          const balance = selectStarBalance(state, kid.id);
-          const tasks = selectTasksForDate(state, kid.id);
-          return (
-            <section
-              key={kid.id}
-              className="rounded-2xl bg-white shadow-sm border border-slate-200 p-5"
-              style={{ borderTopColor: kid.color, borderTopWidth: 4 }}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">
-                  <span className="text-2xl mr-2">{kid.avatar}</span>
-                  {kid.name}
-                </h2>
-                <span className="font-bold text-amber-500">⭐ {balance}</span>
+        return (
+          <Card key={kid.id} accent={kid.color}>
+            <div className="flex items-center gap-4 mb-4">
+              <IconBadge icon={kid.avatar} size="lg" color={kid.color} circle />
+              <div className="flex-1">
+                <h2 className="text-xl font-extrabold">{kid.name}</h2>
+                <StarCount value={balance} size="md" />
               </div>
-              <ul className="space-y-2">
-                {tasks.map((task) => {
-                  const done = selectIsTaskDone(state, task.id, kid.id);
-                  return (
-                    <li key={task.id}>
-                      <button
-                        onClick={() => toggleCompletion(task.id, kid.id)}
-                        className={`w-full flex items-center gap-3 rounded-xl border p-3 text-left transition ${
-                          done
-                            ? 'bg-green-50 border-green-300 line-through text-slate-400'
-                            : 'bg-white border-slate-200 hover:border-slate-300'
-                        }`}
-                      >
-                        <span className="text-xl">{task.icon}</span>
-                        <span className="flex-1">{task.title}</span>
-                        <span className="text-amber-500 text-sm">+{task.starValue}⭐</span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          );
-        })}
-      </div>
+              <ProgressRing
+                value={doneCount}
+                total={tasks.length}
+                size={64}
+                color={kid.color}
+              />
+            </div>
 
-      <button
-        onClick={() => useStore.getState().resetToSeed()}
-        className="mt-8 text-sm text-slate-400 underline"
+            <ul className="space-y-2">
+              {tasks.map((task) => {
+                const done = selectIsTaskDone(state, task.id, kid.id);
+                return (
+                  <li key={task.id}>
+                    <button
+                      onClick={() => state.toggleCompletion(task.id, kid.id)}
+                      className={`w-full min-h-[44px] flex items-center gap-3 rounded-2xl border-2 p-3 text-left transition ${
+                        done
+                          ? 'bg-green-50 border-green-300 text-slate-400 line-through'
+                          : 'bg-white border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      <IconBadge icon={task.icon} size="sm" />
+                      <span className="flex-1 font-semibold">{task.title}</span>
+                      <StarCount value={task.starValue} size="sm" />
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
+
+function ManageViewDemo() {
+  const resetToSeed = useStore((s) => s.resetToSeed);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [icon, setIcon] = useState('⭐');
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <h2 className="text-xl font-extrabold mb-1">Grown-up tools</h2>
+        <p className="text-slate-500 mb-4">
+          Feature tracks (profiles, chores, rewards) plug their management screens
+          in here. This is a design-system demo slot.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <Button leadingIcon={icon} onClick={() => setPickerOpen(true)}>
+            Pick an icon
+          </Button>
+          <Button variant="secondary" onClick={resetToSeed}>
+            Reset demo data
+          </Button>
+        </div>
+      </Card>
+
+      <Modal
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        title="Choose an icon"
+        footer={<Button onClick={() => setPickerOpen(false)}>Done</Button>}
       >
-        Reset demo data
-      </button>
+        <IconPicker value={icon} onChange={setIcon} />
+      </Modal>
     </div>
   );
 }
