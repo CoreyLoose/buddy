@@ -155,8 +155,10 @@ describe('KidDailyView (B2)', () => {
     const date = '2026-11-08';
     render(<KidDailyView kidId={AVA} date={date} />);
 
-    // 3 tasks, 0 done -> 0%
-    expect(screen.getByRole('img', { name: /0% complete, 0 of 3/ })).toBeInTheDocument();
+    // 3 tasks, 0 done
+    const ring = screen.getByRole('progressbar');
+    expect(ring).toHaveAttribute('aria-valuenow', '0');
+    expect(ring).toHaveAttribute('aria-valuemax', '3');
 
     fireEvent.click(screen.getByRole('button', { name: /Brush teeth/ }));
 
@@ -164,8 +166,8 @@ describe('KidDailyView (B2)', () => {
       .getState()
       .tasks.find((t) => t.title === 'Brush teeth')!;
     expect(selectIsTaskDone(useStore.getState(), brush.id, AVA, date)).toBe(true);
-    // 1 of 3 done -> 33%
-    expect(screen.getByRole('img', { name: /1 of 3 tasks done/ })).toBeInTheDocument();
+    // 1 of 3 done
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '1');
   });
 
   it('only shows tasks scheduled for the given weekday', () => {

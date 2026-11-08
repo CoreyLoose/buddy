@@ -10,6 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test",
+    "e2e:pwa": "playwright test --config=playwright.pwa.config.ts",
+    "icons": "node scripts/gen-pwa-icons.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -30,6 +32,7 @@
     "tailwindcss": "^3.4.13",
     "typescript": "^5.6.2",
     "vite": "^5.4.8",
+    "vite-plugin-pwa": "^2.0.0",
     "vitest": "^2.1.2"
   }
 }

@@ -6,7 +6,7 @@ import {
   toLocalDateString,
 } from '@/store';
 import type { PartOfDay, Task } from '@/store';
-import { ProgressRing } from './ProgressRing';
+import { ProgressRing } from '@/ui';
 import { PART_OF_DAY_META, PART_OF_DAY_ORDER } from './constants';
 
 export interface KidDailyViewProps {
@@ -56,11 +56,26 @@ export function KidDailyView({ kidId, date }: KidDailyViewProps) {
   ).length;
 
   const accent = kid?.color ?? '#22c55e';
+  const pct = tasks.length === 0 ? 0 : Math.round((doneCount / tasks.length) * 100);
+  const complete = tasks.length > 0 && doneCount >= tasks.length;
 
   return (
     <div className="space-y-6">
       <header className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5">
-        <ProgressRing done={doneCount} total={tasks.length} color={accent} />
+        <ProgressRing value={doneCount} total={tasks.length} size={120} thickness={12} color={accent}>
+          <span className="flex flex-col items-center text-center">
+            {complete ? (
+              <span className="text-2xl" aria-hidden>
+                🎉
+              </span>
+            ) : (
+              <span className="text-2xl font-bold text-slate-800">{pct}%</span>
+            )}
+            <span className="text-xs font-medium text-slate-500">
+              {doneCount}/{tasks.length}
+            </span>
+          </span>
+        </ProgressRing>
         <div>
           <h2 className="text-2xl font-bold text-slate-800">
             {kid ? (
