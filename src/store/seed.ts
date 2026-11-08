@@ -2,13 +2,13 @@ import type { AppData } from './types';
 
 /** Demo/first-run data so the app is never empty on first load. */
 export function createSeedData(): AppData {
-  const avaId = 'kid_ava';
-  const noahId = 'kid_noah';
+  const ozzyId = 'kid_ozzy';
+  const orenId = 'kid_oren';
 
   return {
     kids: [
-      { id: avaId, name: 'Ava', avatar: '🦄', color: '#f472b6' },
-      { id: noahId, name: 'Noah', avatar: '🚀', color: '#60a5fa' },
+      { id: ozzyId, name: 'Ozzy', avatar: '🦖', color: '#22c55e' },
+      { id: orenId, name: 'Oren', avatar: '🦉', color: '#3b82f6' },
     ],
     tasks: [
       {
@@ -16,7 +16,7 @@ export function createSeedData(): AppData {
         title: 'Brush teeth',
         icon: '🪥',
         type: 'routine',
-        assignedTo: [avaId, noahId],
+        assignedTo: [ozzyId, orenId],
         schedule: { days: [], partOfDay: 'morning' },
         starValue: 1,
         order: 0,
@@ -26,7 +26,7 @@ export function createSeedData(): AppData {
         title: 'Make the bed',
         icon: '🛏️',
         type: 'chore',
-        assignedTo: [avaId, noahId],
+        assignedTo: [ozzyId, orenId],
         schedule: { days: [], partOfDay: 'morning' },
         starValue: 2,
         order: 1,
@@ -36,7 +36,7 @@ export function createSeedData(): AppData {
         title: 'Do homework',
         icon: '📚',
         type: 'chore',
-        assignedTo: [avaId],
+        assignedTo: [ozzyId],
         schedule: { days: [1, 2, 3, 4, 5], partOfDay: 'afternoon' },
         starValue: 3,
         order: 2,
@@ -46,7 +46,7 @@ export function createSeedData(): AppData {
         title: 'Put on pajamas',
         icon: '🧸',
         type: 'routine',
-        assignedTo: [avaId, noahId],
+        assignedTo: [ozzyId, orenId],
         schedule: { days: [], partOfDay: 'evening' },
         starValue: 1,
         order: 3,

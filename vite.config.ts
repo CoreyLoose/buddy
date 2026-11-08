@@ -8,7 +8,13 @@ import { fileURLToPath, URL } from 'node:url';
 // unit tests and keeps the test environment clean.
 const isTest = process.env.VITEST === 'true';
 
+// Served at the root in local dev / preview / e2e, but under `/buddy/` on
+// GitHub Pages (project sites live at coreyloose.github.io/buddy/). The deploy
+// workflow sets GITHUB_PAGES=true so only that build gets the sub-path base.
+const base = process.env.GITHUB_PAGES === 'true' ? '/buddy/' : '/';
+
 export default defineConfig({
+  base,
   plugins: [
     react(),
     ...(isTest
@@ -16,16 +22,17 @@ export default defineConfig({
       : [
           VitePWA({
             registerType: 'autoUpdate',
+            base,
             includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
             manifest: {
-              name: 'Chore Stars',
-              short_name: 'Chore Stars',
+              name: 'Family Routines',
+              short_name: 'Routines',
               description: 'Chore & routine tracker for kids, with star rewards.',
               theme_color: '#6366f1',
               background_color: '#f8fafc',
               display: 'standalone',
-              start_url: '/',
-              scope: '/',
+              start_url: base,
+              scope: base,
               icons: [
                 { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
                 { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
@@ -39,7 +46,7 @@ export default defineConfig({
             },
             workbox: {
               globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
-              navigateFallback: '/index.html',
+              navigateFallback: `${base}index.html`,
               cleanupOutdatedCaches: true,
             },
             devOptions: { enabled: false },

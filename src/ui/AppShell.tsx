@@ -27,7 +27,7 @@ export interface AppShellProps {
  * This shell only owns layout + switching — feature screens are injected as slots.
  */
 export function AppShell({
-  title = '⭐ Chore Stars',
+  title = '⭐ Family Routines',
   familyView,
   kidView,
   manageView,
