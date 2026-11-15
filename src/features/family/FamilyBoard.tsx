@@ -75,8 +75,9 @@ function KidPanel({ side, kids, kid, onPick, onOpenStore }: KidPanelProps) {
 
   return (
     <Card
-      accent={kid?.color}
       className="flex flex-col gap-4"
+      // The kid's color floods the whole panel so little ones can spot "theirs".
+      style={kid ? { backgroundColor: kid.color, borderColor: kid.color } : undefined}
       data-testid={`panel-${side.toLowerCase()}`}
     >
       <div className="flex items-center justify-between gap-2">

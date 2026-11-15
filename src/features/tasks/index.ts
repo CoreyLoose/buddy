@@ -8,5 +8,7 @@ export {
   PART_OF_DAY_ORDER,
   PART_OF_DAY_META,
   ICON_CHOICES,
+  TASK_ICON_GROUPS,
+  isIconPair,
   DEFAULT_ICON,
 } from './constants';

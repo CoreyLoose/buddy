@@ -197,3 +197,16 @@ describe('KidDailyView (B2)', () => {
     expect(todays).toHaveLength(3);
   });
 });
+
+describe('task icon palette', () => {
+  it('offers 80 unique icons including pajamas and socks & shoes', async () => {
+    const { ICON_CHOICES, TASK_ICON_GROUPS, isIconPair } = await import('./constants');
+    expect(ICON_CHOICES).toHaveLength(80);
+    expect(new Set(ICON_CHOICES).size).toBe(80);
+    const names = TASK_ICON_GROUPS.flatMap((g) => g.icons.map((x) => x.name));
+    expect(names).toContain('Put on pajamas');
+    expect(names).toContain('Socks & shoes');
+    expect(isIconPair('🧦👟')).toBe(true);
+    expect(isIconPair('🛏️')).toBe(false);
+  });
+});

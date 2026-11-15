@@ -44,7 +44,7 @@ export function createSeedData(): AppData {
       {
         id: 'task_pajamas',
         title: 'Put on pajamas',
-        icon: '🧸',
+        icon: '👕🌙',
         type: 'routine',
         assignedTo: [ozzyId, orenId],
         schedule: { days: [], partOfDay: 'evening' },

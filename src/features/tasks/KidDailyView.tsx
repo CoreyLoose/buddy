@@ -7,7 +7,7 @@ import {
 } from '@/store';
 import type { PartOfDay, Task } from '@/store';
 import { ProgressRing } from '@/ui';
-import { PART_OF_DAY_META, PART_OF_DAY_ORDER } from './constants';
+import { PART_OF_DAY_META, PART_OF_DAY_ORDER, isIconPair } from './constants';
 
 export interface KidDailyViewProps {
   /** Which kid's day to show. Passed in by a parent — this view does not
@@ -105,11 +105,11 @@ export function KidDailyView({ kidId, date }: KidDailyViewProps) {
         const meta = PART_OF_DAY_META[key];
         return (
           <section key={key} aria-label={meta.label}>
-            <h3 className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-400">
+            <h3 className="mb-2 inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-sm font-bold uppercase tracking-wide text-slate-500 shadow-sm">
               <span aria-hidden>{meta.icon}</span>
               {meta.label}
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {groupTasks.map((task) => {
                 const done = selectIsTaskDone(state, task.id, kidId, resolvedDate);
                 return (
@@ -119,22 +119,24 @@ export function KidDailyView({ kidId, date }: KidDailyViewProps) {
                         state.toggleCompletion(task.id, kidId, resolvedDate)
                       }
                       aria-pressed={done}
-                      className={`flex w-full items-center gap-3 rounded-2xl border p-4 text-left transition ${
+                      className={`flex w-full items-center gap-4 rounded-2xl border p-3 text-left transition ${
                         done
                           ? 'border-green-300 bg-green-50'
                           : 'border-slate-200 bg-white hover:border-slate-300'
                       }`}
                     >
                       <span
-                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xl transition ${
-                          done ? 'bg-green-500 text-white' : 'bg-slate-100'
+                        className={`flex h-24 w-24 shrink-0 items-center justify-center rounded-full leading-none transition ${
+                          done
+                            ? 'bg-green-500 text-5xl text-white'
+                            : `bg-slate-100 ${isIconPair(task.icon) ? 'text-4xl' : 'text-6xl'}`
                         }`}
                         aria-hidden
                       >
                         {done ? '✓' : task.icon}
                       </span>
                       <span
-                        className={`flex-1 text-lg font-medium ${
+                        className={`flex-1 text-xl font-semibold ${
                           done ? 'text-slate-400 line-through' : 'text-slate-800'
                         }`}
                       >

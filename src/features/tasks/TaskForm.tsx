@@ -3,7 +3,8 @@ import { useStore } from '@/store';
 import type { PartOfDay, Task, TaskType } from '@/store';
 import {
   DEFAULT_ICON,
-  ICON_CHOICES,
+  TASK_ICON_GROUPS,
+  isIconPair,
   PART_OF_DAY_META,
   PART_OF_DAY_ORDER,
   WEEKDAYS,
@@ -116,22 +117,34 @@ export function TaskForm({ task, onDone }: TaskFormProps) {
 
       <fieldset>
         <legend className="text-sm font-semibold text-slate-700">Icon</legend>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {ICON_CHOICES.map((choice) => (
-            <button
-              key={choice}
-              type="button"
-              aria-label={`icon ${choice}`}
-              aria-pressed={icon === choice}
-              onClick={() => setIcon(choice)}
-              className={`flex h-10 w-10 items-center justify-center rounded-xl border text-xl transition ${
-                icon === choice
-                  ? 'border-slate-800 bg-slate-100'
-                  : 'border-slate-200 hover:border-slate-400'
-              }`}
-            >
-              {choice}
-            </button>
+        <div className="mt-2 space-y-3">
+          {TASK_ICON_GROUPS.map((group) => (
+            <div key={group.label}>
+              <p className="mb-1 text-xs font-bold uppercase tracking-wide text-slate-400">
+                {group.label}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {group.icons.map(({ emoji, name }) => (
+                  <button
+                    key={emoji}
+                    type="button"
+                    title={name}
+                    aria-label={`icon ${emoji}`}
+                    aria-pressed={icon === emoji}
+                    onClick={() => setIcon(emoji)}
+                    className={`flex h-12 w-12 items-center justify-center rounded-xl border transition ${
+                      isIconPair(emoji) ? 'text-base' : 'text-2xl'
+                    } ${
+                      icon === emoji
+                        ? 'border-slate-800 bg-slate-100'
+                        : 'border-slate-200 hover:border-slate-400'
+                    }`}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </fieldset>
