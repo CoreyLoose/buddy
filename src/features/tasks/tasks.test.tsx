@@ -1,10 +1,10 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { render, screen, fireEvent, within, act } from '@testing-library/react';
 import { useStore, selectIsTaskDone, selectTasksForDate } from '@/store';
 import { emptyData } from '@/store';
 import { TaskForm } from './TaskForm';
 import { TaskManager } from './TaskManager';
-import { KidDailyView } from './KidDailyView';
+import { KidDailyView, FADE_OUT_MS } from './KidDailyView';
 
 const AVA = 'kid_ava';
 const NOAH = 'kid_noah';
@@ -137,6 +137,61 @@ describe('KidDailyView (B2)', () => {
       starValue: 1,
     });
   }
+
+  describe('fading out completed tasks', () => {
+    beforeEach(() => vi.useFakeTimers());
+    afterEach(() => vi.useRealTimers());
+
+    it('fades a completed task over 10s, then removes it from the list', () => {
+      seedDayTasks();
+      render(<KidDailyView kidId={AVA} date="2026-11-08" />);
+
+      fireEvent.click(screen.getByRole('button', { name: /Brush teeth/ }));
+      const row = screen.getByRole('button', { name: /Brush teeth/ }).closest('li')!;
+      expect(row).toHaveStyle({ opacity: '0' });
+      expect(row.style.transition).toContain(`${FADE_OUT_MS}ms`);
+
+      act(() => {
+        vi.advanceTimersByTime(FADE_OUT_MS - 1);
+      });
+      expect(screen.getByText('Brush teeth')).toBeInTheDocument();
+
+      act(() => {
+        vi.advanceTimersByTime(1);
+      });
+      expect(screen.queryByText('Brush teeth')).not.toBeInTheDocument();
+      expect(screen.queryByRole('region', { name: 'Morning' })).not.toBeInTheDocument();
+      // Remaining tasks are untouched, and progress still counts the finished one.
+      expect(screen.getByText('Homework')).toBeInTheDocument();
+      expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '1');
+    });
+
+    it('tapping a fading task again undoes it and keeps it in the list', () => {
+      seedDayTasks();
+      render(<KidDailyView kidId={AVA} date="2026-11-08" />);
+
+      fireEvent.click(screen.getByRole('button', { name: /Brush teeth/ }));
+      fireEvent.click(screen.getByRole('button', { name: /Brush teeth/ }));
+      act(() => {
+        vi.advanceTimersByTime(FADE_OUT_MS * 2);
+      });
+
+      const btn = screen.getByRole('button', { name: /Brush teeth/ });
+      expect(btn).toHaveAttribute('aria-pressed', 'false');
+      expect(btn.closest('li')).toHaveStyle({ opacity: '1' });
+    });
+
+    it('hides already-finished tasks right away, with a toggle to show them', () => {
+      seedDayTasks();
+      const [brush] = selectTasksForDate(useStore.getState(), AVA, '2026-11-08');
+      useStore.getState().toggleCompletion(brush.id, AVA, '2026-11-08');
+      render(<KidDailyView kidId={AVA} date="2026-11-08" />);
+
+      expect(screen.queryByText('Brush teeth')).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /Show 1 finished/ }));
+      expect(screen.getByText('Brush teeth')).toBeInTheDocument();
+    });
+  });
 
   it('groups tasks by part of day', () => {
     seedDayTasks();
