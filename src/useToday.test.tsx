@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { msUntilNextMidnight, useToday } from './useToday';
 import App from './App';
 import { useStore, emptyData } from '@/store';
@@ -80,7 +80,7 @@ describe('KidDailyView overnight', () => {
     vi.setSystemTime(new Date(2026, 10, 18, 23, 59, 50));
     useStore.setState({ ...emptyData() });
     const kid = useStore.getState().addKid({ name: 'Ozzy', avatar: '🦖', color: '#60a5fa' });
-    const task = useStore.getState().addTask({
+    useStore.getState().addTask({
       title: 'Brush teeth',
       icon: '🪥',
       type: 'routine',
@@ -90,8 +90,9 @@ describe('KidDailyView overnight', () => {
     });
     render(<KidDailyView kidId={kid} />);
 
+    // Tap it like a kid would; it stays visible (fading) while it's done.
     act(() => {
-      useStore.getState().toggleCompletion(task, kid);
+      fireEvent.click(screen.getByRole('button', { name: /Brush teeth/ }));
     });
     expect(screen.getByRole('button', { name: /Brush teeth/ })).toHaveAttribute('aria-pressed', 'true');
 
