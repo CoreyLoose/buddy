@@ -37,7 +37,7 @@ export function TaskForm({ task, onDone }: TaskFormProps) {
   );
   const [days, setDays] = useState<number[]>(task?.schedule.days ?? []);
   const [part, setPart] = useState<PartChoice>(task?.schedule.partOfDay ?? 'anytime');
-  const [starValue, setStarValue] = useState<number>(task?.starValue ?? 1);
+  const [starValue, setStarValue] = useState<string>(String(task?.starValue ?? 1));
   const [error, setError] = useState<string | null>(null);
 
   const isEdit = Boolean(task);
@@ -68,6 +68,12 @@ export function TaskForm({ task, onDone }: TaskFormProps) {
       return;
     }
 
+    const stars = Number.parseInt(starValue, 10);
+    if (starValue.trim() === '' || !Number.isFinite(stars) || stars < 0) {
+      setError('Please enter a star value.');
+      return;
+    }
+
     const schedule = {
       days: everyDay ? [] : days,
       ...(part !== 'anytime' ? { partOfDay: part } : {}),
@@ -80,7 +86,7 @@ export function TaskForm({ task, onDone }: TaskFormProps) {
         type,
         assignedTo,
         schedule,
-        starValue,
+        starValue: stars,
       });
     } else {
       addTask({
@@ -89,7 +95,7 @@ export function TaskForm({ task, onDone }: TaskFormProps) {
         type,
         assignedTo,
         schedule,
-        starValue,
+        starValue: stars,
       });
     }
     onDone?.();
@@ -262,7 +268,7 @@ export function TaskForm({ task, onDone }: TaskFormProps) {
           min={0}
           max={99}
           value={starValue}
-          onChange={(e) => setStarValue(Math.max(0, Number(e.target.value) || 0))}
+          onChange={(e) => setStarValue(e.target.value)}
           className="mt-1 w-24 rounded-xl border border-slate-300 px-3 py-2 focus:border-slate-500 focus:outline-none"
         />
       </div>
