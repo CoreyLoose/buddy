@@ -41,6 +41,9 @@ export type { AvatarPickerProps } from './AvatarPicker';
 export { ColorPicker } from './ColorPicker';
 export type { ColorPickerProps } from './ColorPicker';
 
+export { ColorWheel } from './ColorWheel';
+export type { ColorWheelProps } from './ColorWheel';
+
 // Shell & navigation
 export { AppShell } from './AppShell';
 export type { AppShellProps } from './AppShell';

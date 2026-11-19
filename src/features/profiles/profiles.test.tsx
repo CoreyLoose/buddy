@@ -3,6 +3,7 @@ import { render, screen, within, fireEvent } from '@testing-library/react';
 import { useStore, emptyData } from '@/store';
 import { ProfilesHome } from './ProfilesHome';
 import { KidSwitcher } from './KidSwitcher';
+import { KidColorPicker } from './KidColorPicker';
 import { useSession, selectActiveKid } from './session';
 
 function resetState() {
@@ -135,5 +136,24 @@ describe('session selectors', () => {
     const updated = useStore.getState().kids;
     expect(selectActiveKid(updated, id)?.name).toBe('Mia');
     expect(selectActiveKid(updated, 'missing')).toBeNull();
+  });
+});
+
+describe('KidColorPicker', () => {
+  it('only changes the kid color after Save is pressed', () => {
+    const kid = seedKid('Mia', '🐱', '#34d399');
+    render(<KidColorPicker kidId={kid} />);
+    const save = screen.getByRole('button', { name: /save/i });
+    expect(save).toBeDisabled();
+
+    fireEvent.keyDown(screen.getByRole('slider', { name: /pick your color/i }), {
+      key: 'ArrowRight',
+    });
+    expect(useStore.getState().kids[0].color).toBe('#34d399');
+    expect(save).toBeEnabled();
+
+    fireEvent.click(save);
+    expect(useStore.getState().kids[0].color).not.toBe('#34d399');
+    expect(screen.getByRole('status')).toHaveTextContent(/saved/i);
   });
 });

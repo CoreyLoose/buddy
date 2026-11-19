@@ -12,6 +12,9 @@ export type { KidCardProps } from './KidCard';
 export { KidForm } from './KidForm';
 export type { KidFormProps } from './KidForm';
 
+export { KidColorPicker } from './KidColorPicker';
+export type { KidColorPickerProps } from './KidColorPicker';
+
 // Session store: how other tracks read/set "the current kid".
 export { useSession, useActiveKid, selectActiveKid } from './session';
 export type { SessionState } from './session';
