@@ -77,6 +77,31 @@ describe('TaskForm (B1 management)', () => {
 
     expect(useStore.getState().tasks.find((t) => t.id === id)!.title).toBe('New title');
   });
+
+  it('lets the star value be cleared, but refuses to save it blank', () => {
+    const id = useStore.getState().addTask({
+      title: 'Task',
+      icon: '🧹',
+      type: 'chore',
+      assignedTo: [AVA],
+      schedule: { days: [] },
+      starValue: 0,
+    });
+    const task = useStore.getState().tasks.find((t) => t.id === id)!;
+    render(<TaskForm task={task} />);
+
+    const stars = screen.getByLabelText('Star value') as HTMLInputElement;
+    fireEvent.change(stars, { target: { value: '' } });
+    expect(stars.value).toBe('');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    expect(screen.getByText(/enter a star value/i)).toBeInTheDocument();
+    expect(useStore.getState().tasks.find((t) => t.id === id)!.starValue).toBe(0);
+
+    fireEvent.change(stars, { target: { value: '1' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    expect(useStore.getState().tasks.find((t) => t.id === id)!.starValue).toBe(1);
+  });
 });
 
 describe('TaskManager reordering', () => {
