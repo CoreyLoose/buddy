@@ -1,10 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  useStore,
-  selectTasksForDate,
-  selectIsTaskDone,
-  toLocalDateString,
-} from '@/store';
+import { useStore, selectTasksForDate, selectIsTaskDone } from '@/store';
+import { useToday } from '@/useToday';
 import type { PartOfDay, Task } from '@/store';
 import { ProgressRing } from '@/ui';
 import { PART_OF_DAY_META, PART_OF_DAY_ORDER, isIconPair } from './constants';
@@ -32,7 +28,9 @@ const GROUP_ORDER: GroupKey[] = [...PART_OF_DAY_ORDER, 'anytime'];
 export function KidDailyView({ kidId, date }: KidDailyViewProps) {
   // Subscribe to the full state so completions/tasks changes re-render the view.
   const state = useStore();
-  const resolvedDate = date ?? toLocalDateString();
+  // Live "today" — re-renders at midnight so a view left open overnight resets.
+  const today = useToday();
+  const resolvedDate = date ?? today;
 
   // Tasks completed during this visit that are still fading out. Anything done
   // that isn't in here (finished earlier, or already faded) is hidden from the

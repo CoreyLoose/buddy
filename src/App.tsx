@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AppShell, useUiStore, EmptyState } from '@/ui';
 import { useStore } from '@/store';
 import {
@@ -12,6 +12,7 @@ import { KidDailyView, TaskManager } from '@/features/tasks';
 import { RewardStore, RewardCatalog, StarLedger } from '@/features/rewards';
 import { FamilyBoard } from '@/features/family';
 import { useWakeLock } from './useWakeLock';
+import { useToday } from './useToday';
 
 /**
  * M2 composition root. Wires the tracks together — this layer holds no business
@@ -24,8 +25,28 @@ import { useWakeLock } from './useWakeLock';
  * The family dashboard remembers its own two kids (persisted); the single Kid
  * view uses the ephemeral session selection. All app data persists via the
  * localStorage-backed store.
+ *
+ * Always-on tablet: when the calendar day rolls over (midnight, or the tablet
+ * waking up the next morning) the app returns to the family home screen and
+ * remounts, dropping any open modal/form. Completions are date-stamped, so the
+ * new day's lists start fresh while history and star balances are kept.
  */
 export default function App() {
+  const today = useToday();
+  const setView = useUiStore((s) => s.setView);
+
+  // Go home on a new day (skip the initial mount — don't clobber startup state).
+  const lastDay = useRef(today);
+  useEffect(() => {
+    if (lastDay.current === today) return;
+    lastDay.current = today;
+    setView('family');
+  }, [today, setView]);
+
+  return <AppContent key={today} />;
+}
+
+function AppContent() {
   const hasKids = useStore((s) => s.kids.length > 0);
   const [addOpen, setAddOpen] = useState(false);
 
