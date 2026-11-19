@@ -41,3 +41,24 @@ describe('ColorPicker', () => {
     expect(onChange).toHaveBeenCalledWith(target.hex);
   });
 });
+
+describe('ColorWheel', () => {
+  it('round-trips hex through HSV', async () => {
+    const { hexToHsv, hsvToHex } = await import('./ColorWheel');
+    for (const hex of ['#ff0000', '#00ff00', '#3b82f6', '#f2a60d']) {
+      const { h, s, v } = hexToHsv(hex);
+      expect(hsvToHex(h, s, v)).toBe(hex);
+    }
+  });
+
+  it('nudges hue with arrow keys', async () => {
+    const { ColorWheel } = await import('./ColorWheel');
+    const onChange = vi.fn();
+    render(<ColorWheel value="#f2a60d" onChange={onChange} />);
+    fireEvent.keyDown(screen.getByRole('slider', { name: 'Color wheel' }), {
+      key: 'ArrowRight',
+    });
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange.mock.calls[0][0]).toMatch(/^#[0-9a-f]{6}$/);
+  });
+});

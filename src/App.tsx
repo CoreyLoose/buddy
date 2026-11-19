@@ -5,6 +5,7 @@ import {
   ProfilesHome,
   KidSwitcher,
   KidForm,
+  KidColorPicker,
   useSession,
   useActiveKid,
 } from '@/features/profiles';
@@ -110,6 +111,7 @@ function SingleKidView() {
     <div className="space-y-6">
       <KidDailyView kidId={activeKid.id} />
       <RewardStore kidId={activeKid.id} />
+      <KidColorPicker kidId={activeKid.id} />
     </div>
   );
 }
